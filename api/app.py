@@ -11,8 +11,6 @@ import os
 redis = StrictRedis('redis', 6379, charset="utf-8", decode_responses=True)
 app = Flask(__name__)
 
-#Import api hook from github secrets
-SLACK_HOOK = os.environ['SLACK_HOOK']
 
 #factorial
 @app.route('/factorial/<int:num>')
@@ -97,7 +95,7 @@ def md5(result):
 @app.route('/slack-alert/<string:message>')
 def slackalert(message):
     payload = '{"text":"%s"}' % message
-    requests.post(os.getenv('SLACK_HOOK'), data=payload)
+    requests.post(os.getenv('INPUT_SLACK_HOOK'), data=payload)
     return jsonify(input=message,
         output=True)
 
