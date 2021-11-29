@@ -1,0 +1,16 @@
+version: "3.4"
+services:
+  web:
+    image: dsanders14/tcmg412-api
+    environment:
+      - SLACK_URL
+    ports:
+      - "5000:4000"
+    networks:
+      - webnet
+  redis: 
+    image: redis
+    networks:
+      - webnet
+networks:
+  webnet:
