@@ -4,12 +4,14 @@ from math import sqrt
 from itertools import count, islice
 import requests
 from redis import Redis,StrictRedis,RedisError
+import os
 
 
 #Use strict redis
 redis = StrictRedis('redis', 6379, charset="utf-8", decode_responses=True)
 app = Flask(__name__)
 
+#Import api hook from github secrets
 SLACK_HOOK = os.environ['SLACK_HOOK']
 
 #factorial
@@ -95,7 +97,7 @@ def md5(result):
 @app.route('/slack-alert/<string:message>')
 def slackalert(message):
     payload = '{"text":"%s"}' % message
-    requests.post('https://hooks.slack.com/services/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', data=payload)
+    requests.post(SLACK_HOOK, data=payload)
     return jsonify(input=message,
         output=True)
 
