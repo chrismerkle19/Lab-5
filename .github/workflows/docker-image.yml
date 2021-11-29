@@ -32,10 +32,7 @@ jobs:
     - name: Docker ps
       run: docker ps
     
-    - name: Test Code
-      run: |
-        cd api
-        docker run dsanders14/tcmg412-test-file
+    
     
     - name: Pushing image
       run: |
