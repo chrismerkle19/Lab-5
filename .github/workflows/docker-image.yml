@@ -22,7 +22,7 @@ jobs:
     - name: Build API
       run: |
         cd api
-        docker build -t dsanders14/tcmg412-API .
+        docker build -t dsanders14/tcmg412-api .
     
     - name: Docker compose
       run: |
