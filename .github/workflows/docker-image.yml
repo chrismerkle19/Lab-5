@@ -34,6 +34,7 @@ jobs:
     
     - name: Test Code
       run: |
+        cd api
         docker run dsanders14/tcmg412-test-file
     
     - name: Pushing image
