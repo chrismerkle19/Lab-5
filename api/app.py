@@ -10,6 +10,8 @@ from redis import Redis,StrictRedis,RedisError
 redis = StrictRedis('redis', 6379, charset="utf-8", decode_responses=True)
 app = Flask(__name__)
 
+SLACK_HOOK = os.environ['SLACK_HOOK']
+
 #factorial
 @app.route('/factorial/<int:num>')
 def factorial(num):
