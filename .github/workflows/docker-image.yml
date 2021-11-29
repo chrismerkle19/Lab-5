@@ -20,6 +20,8 @@ jobs:
         docker build -t dsanders14/tcmg412-test-file .
       
     - name: Build API
+      env:
+        SLACK_HOOK = ${{ secrets.SLACK_HOOK }}
       run: |
         cd api
         docker build -t dsanders14/tcmg412-api .
