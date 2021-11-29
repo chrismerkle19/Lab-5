@@ -37,6 +37,6 @@ jobs:
     - name: Pushing image
       run: |
         docker login -u ${{ secrets.Dylan_username}} -p ${{ secrets.Dylan_password}}
-        docker image tag dsanders14/tcmg412-docker dsanders14/tcmg412-api:latest
-        docker image tag dsanders14/tcmg412-docker dsanders14/tcmg412-api:$(date +%s)
+        docker image tag dsanders14/tcmg412-api dsanders14/tcmg412-api:latest
+        docker image tag dsanders14/tcmg412-api dsanders14/tcmg412-api:$(date +%s)
         docker image push --all-tags dsanders14/tcmg412-docker
