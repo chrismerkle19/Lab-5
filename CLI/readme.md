@@ -1,4 +1,4 @@
-To use this CLI, use arguments to input the destination of the request and your input.
+To use this CLI, use arguments to input the destination and input.
 
 E.g.:
 
