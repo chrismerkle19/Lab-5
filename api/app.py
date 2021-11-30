@@ -104,7 +104,7 @@ def md5(result):
 @app.route('/slack-alert/<string:message>')
 def slackalert(message):
     payload = '{"text":"%s"}' % message
-    requests.post(os.getenv('INPUT_SLACK_HOOK'), data=payload)
+    requests.post(os.getenv('https://hooks.slack.com/services/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'), data=payload)
     return jsonify(input=message, output=True)
 
 
