@@ -37,7 +37,7 @@ jobs:
     - name: Test Code
       run: |
         cd api
-        docker run dsanders14/tcmg412-test-file
+        curl localhost:5000/md5/test
     
     - name: Pushing image
       run: |
