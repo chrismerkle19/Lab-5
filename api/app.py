@@ -9,7 +9,7 @@ import os
 #change
 
 # Use strict redis
-r = StrictRedis(host="127.0.0.1", port=6379, charset="utf-8", decode_responses=True)
+r = StrictRedis(host="redis", port=6379, charset="utf-8", decode_responses=True)
 app = Flask(__name__)
 
 
@@ -274,4 +274,4 @@ def delete(key_string):
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0')
+    app.run(debug=False, host='0.0.0.0', port='5000')
