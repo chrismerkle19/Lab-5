@@ -6,6 +6,7 @@ import requests
 from redis import StrictRedis
 import os
 
+#change
 
 # Use strict redis
 r = StrictRedis(host="127.0.0.1", port=6379, charset="utf-8", decode_responses=True)
