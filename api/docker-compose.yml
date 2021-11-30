@@ -13,7 +13,5 @@ services:
     command: redis-server
     networks:
       - webnet
-    ports:
-      - "6379:6379"
 networks:
   webnet:
