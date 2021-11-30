@@ -8,7 +8,7 @@ import os
 
 
 #Use strict redis
-redis = StrictRedis('redis',host="127.0.0.1", 6379, charset="utf-8", decode_responses=True)
+redis = StrictRedis(host="127.0.0.1", 6379, charset="utf-8", decode_responses=True)
 app = Flask(__name__)
 
 
