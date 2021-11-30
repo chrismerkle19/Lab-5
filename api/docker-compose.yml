@@ -5,7 +5,7 @@ services:
     environment:
       - SLACK_URL
     ports:
-      - "5000:4000"
+      - "5000:5000"
     networks:
       - webnet
   redis: 
