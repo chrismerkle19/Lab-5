@@ -1,0 +1,26 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ Lab-5/CLI/ ]
+  pull_request:
+    branches: [ Lab-5/CLI/ ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the CLI client
+      run: docker build . --file Lab-5/CLI/Dockerfile --tag chrismerkle19/tcmg412-cli:$(date +%s)
+      
+    - name: Pushing image
+      run: |
+        docker login -u ${{ secrets.CHRIS_USERNAME}} -p ${{ secrets.CHRIS_PASSWORD}}
+        docker image tag chrismerkle19/tcmg412-cli chrismerkle19/tcmg412-cli:latest
+        docker image tag chrismerkle19/tcmg412-cli chrismerkle19/tcmg412-cli:$(date +%s)
+        docker image push --all-tags chrismerkle19/tcmg412-cli
+        
