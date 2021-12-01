@@ -4,6 +4,7 @@ from math import sqrt
 from itertools import count, islice
 import requests
 from redis import StrictRedis
+import base64
 import os
 
 #change
