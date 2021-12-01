@@ -1,5 +1,5 @@
-To use this CLI, use arguments to input the destination and input.
+Our CLI is located in its own repo.
 
-E.g.:
+Please go to the repo listed below to view its source code.
 
-python3 cli.py fibonacci 15
+https://github.com/Group-8-TCMG412/CLI/blob/main/
