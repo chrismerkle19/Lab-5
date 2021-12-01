@@ -37,7 +37,6 @@ jobs:
     - name: Test Code
       run: |
         cd api
-        curl localhost:5000/md5/test
     
     - name: Pushing image
       run: |
