@@ -1,7 +1,7 @@
 import requests
 
 print("\n\nGroup 8 CLI\n--------------------------\n")
-#test
+
 ip = input("Enter the address of API:")
 port = input("Enter the port of API:")
 dest = input("Enter destination of request:")
