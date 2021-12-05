@@ -171,7 +171,7 @@ def kv_retrieve(key):
     _JSON = {
         'key': key,
         'value': None,
-        'command': "{} {}".format('RETRIEVE' if request.method=='GET' else 'DELETE', key)
+        'command': "{} {}".format('RETRIEVE' if request.method=='GET' else 'DELETE', key),
         'result': False,
         'error': None
     }
