@@ -1,7 +1,7 @@
 version: "3.4"
 services:
   web:
-    image: dsanders14/tcmg412-api
+    image: chrismerkle19/tcmg412-api
     environment:
       - SLACK_URL
     ports:
