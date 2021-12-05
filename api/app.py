@@ -3,18 +3,17 @@ import hashlib
 from math import sqrt
 from itertools import count, islice
 import requests
-from redis import StrictRedis
+from redis import StrictRedis, RedisError
 import base64
-import os
 
-#change
+app = Flask(__name__)
 
 # Use strict redis
-r = StrictRedis(host="redis", port=6379, charset="utf-8", decode_responses=True)
-app = Flask(__name__)
+redis = StrictRedis(host="redis", port=6379, charset="utf-8", decode_responses=True)
 
 
 # Factorial
+
 @app.route('/factorial/<int:num>')
 def factorial(num):
     temp_num = 1
@@ -31,7 +30,7 @@ def factorial(num):
         )
 
     else:
-        for i in range(1, int(num)+1):
+        for i in range(1, int(num) + 1):
             temp_num = temp_num * i
         return jsonify(
             input=int(num),
@@ -64,6 +63,7 @@ def calc_fibonacci(number):
                 check = 1
     return jsonify(input=number, output=fibonacci)
 
+
 # is_prime
 
 
@@ -85,6 +85,7 @@ def is_prime(n):
 
     return True
 
+
 # md5
 
 
@@ -100,12 +101,13 @@ def md5(result):
         output=result
     )
 
+
 # slack alert
 
 
 @app.route('/slack-alert/<string:message>')
 def slackalert(message):
-    #sad little work-around that the slack webcrawler will hopefully ignore
+    # sad little work-around that the slack webcrawler will hopefully ignore
     url = "aHR0cHM6Ly9ob29rcy5zbGFjay5jb20vc2VydmljZXMvVDI1N1VCREhEL0IwMlBNTjBUTjdKLzFFcVY1b0haOW5PTEJhOWxjbHhUR3RqOA=="
     payload = '{"text":"%s"}' % message
     requests.post(base64.b64decode(url),
@@ -115,167 +117,91 @@ def slackalert(message):
 
 # LAB 6
 
+@app.route('/keyval', methods=['POST', 'PUT'])
+def kv_upsert():
+    # Set up the values for the return JSON
+    _JSON = {
+        'key': None,
+        'value': None,
+        'command': 'CREATE' if request.method=='POST' else 'UPDATE',
+        'result': False,
+        'error': None
+    }
 
-# POST function
-@app.route('/keyval', methods=['POST'])
-def handle_post():
-    client_data = request.get_json()
-    v = client_data('value')
-
-    # Check for valid JSON
-    if client_data.get('key'):
-        k = client_data.get('key')
-    else:
-        k = ''
-        err_string = "Invalid request from client"
-        return jsonify(
-            key=k,
-            value=v,
-            command=f"CREATE {k}/{v}",
-            result=False,
-            error=err_string
-        ), 400
-
-    # Check if key already exists
-    if r.exists(k):
-        err_string = "Key already exists"
-        return jsonify(
-            key=k,
-            value=v,
-            command=f"CREATE {k}/{v}",
-            result=False,
-            error=err_string
-        ), 409
-
-    # Store data in redis
-    redis_result = r.set(k, v)
-    if not redis_result:
-        err_string = "Could not write to DB"
-    else:
-        err_string = None
-
-    return jsonify(
-        key=k,
-        value=v,
-        command=f"CREATE {k}/{v}",
-        result=redis_result,
-        error=err_string
-    ), 400
-
-
-# PUT function
-@app.route('/keyval', methods=['PUT'])
-def handle_put():
-    client_data = request.get_json()
-    v = client_data('value')
-
-    # Check for valid JSON
-    if client_data.get('key'):
-        k = client_data.get('key')
-    else:
-        k = ''
-        err_string = "Invalid request from client"
-        return jsonify(
-            key=k,
-            value=v,
-            command=f"CREATE {k}/{v}",
-            result=False,
-            error=err_string
-        ), 400
-
-    # Check if key doesn't exist
-    if r.exists(k):
-        err_string = "Key already exists"
-        return jsonify(
-            key=k,
-            value=v,
-            command=f"CREATE {k}/{v}",
-            result=False,
-            error=err_string
-        ), 409
-    else:
-        # store data in redis
-        redis_result = r.set(k, v)
-        err_string = None
-        return jsonify(
-            key=k,
-            value=v,
-            command=f"CREATE {k}/{v}",
-            result=redis_result,
-            error=err_string
-        )
-
-
-# GET FUNCTION
-@app.route("/keyval/<string:key_string>", methods=["GET"])
-def get_value(key_string):
-    client_data = request.get_json()
-    v = client_data('value')
-    
+    # First check for a valid JSON payload
     try:
-        temp_string = r.get(key_string)
+        payload = request.get_json()
+        _JSON['key'] = payload['key']
+        _JSON['value'] = payload['value']
+        _JSON['command'] += f" {payload['key']}/{payload['value']}"
+    except:
+        _JSON['error'] = "Missing or malformed JSON in client request."
+        return jsonify(_JSON), 400
 
-    except client_data.get('key'):
-        k = ''
-        err_string = "Invalid request from client"
-        return jsonify(
-            key=k,
-            value=v,
-            command=f"CREATE {k}/{v}",
-            result=False,
-            error=err_string
-        ), 400
-
-    if not r.exists(key_string):
-        return jsonify(key=key_string,
-                       value=temp_string,
-                       command="GET " + key_string,
-                       result=False,
-                       error="Key does not exist."), 404
-
-    else:
-        val = r.get(key_string)
-        return jsonify(key=key_string,
-                       value=val,
-                       command="GET " + key_string,
-                       result=True,
-                       error=""), 200
-
-
-# DELETE function
-@app.route("/keyval/<string:key_string>", methods=["DELETE"])
-def delete(key_string):
-    client_data = request.get_json()
-    v = client_data('value')
-    
+    # Now try to connect to Redis
     try:
-        temp_string = r.get(key_string)
+        test_value = redis.get(_JSON['key'])
+    except RedisError:
+        _JSON['error'] = "Cannot connect to redis."
+        return jsonify(_JSON), 400
 
-    except client_data.get('key'):
-        k = ''
-        err_string = "Invalid request from client"
-        return jsonify(
-            key=k,
-            value=v,
-            command=f"CREATE {k}/{v}",
-            result=False,
-            error=err_string
-        ), 400
+    # POST == create only
+    if request.method == 'POST' and not test_value == None:
+        _JSON['error'] = "Cannot create new record: key already exists."
+        return jsonify(_JSON), 409
 
-    if r.exists(key_string):
-        r.delete(key_string)
-        return jsonify(key=key_string,
-                       value=temp_string,
-                       command="DELETE " + key_string,
-                       result=True,
-                       error=""), 200
+    # PUT == update only
+    elif (request.method == 'PUT' and test_value == None):
+        _JSON['error'] = "Cannot update record: key does not exist."
+        return jsonify(_JSON), 404
+
+    # OK, create or update the record with the user-supplied values
     else:
-        return jsonify(key=key_string,
-                       value=temp_string,
-                       command="DELETE " + key_string,
-                       result=False,
-                       error="Key does not exist."), 404
+        if redis.set(_JSON['key'], _JSON['value']) == False:
+            _JSON['error'] = "There was a problem creating the value in Redis."
+            return jsonify(_JSON), 400
+        else:
+            _JSON['result'] = True
+            return jsonify(_JSON), 200
+
+
+@app.route('/keyval/<string:key>', methods=['GET', 'DELETE'])
+def kv_retrieve(key):
+    # Set up the values for the return JSON
+    _JSON = {
+        'key': key,
+        'value': None,
+        'command': "{} {}".format('RETRIEVE' if request.method=='GET' else 'DELETE', key)
+        'result': False,
+        'error': None
+    }
+
+    try:
+        test_value = redis.get(key)
+    except RedisError:
+        _JSON['error'] = "Cannot connect to redis."
+        return jsonify(_JSON), 400
+
+    # Can't retrieve OR delete if the value doesn't exist
+    if test_value == '':
+        _JSON['error'] = "Key does not exist."
+        return jsonify(_JSON), 404
+    else:
+        _JSON['value'] = test_value
+
+    if request.method == 'GET':
+        _JSON['result'] = True
+        return jsonify(_JSON), 200
+
+    elif request.method == 'DELETE':
+        ret = redis.delete(key)
+        if ret == 1:
+            _JSON['result'] = True
+            return jsonify(_JSON)
+        else:
+            _JSON['error'] = f"Unable to delete key (expected return value 1; client returned {ret})"
+            return jsonify(_JSON), 400
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port='5000')
+    app.run(debug=False, host='0.0.0.0')
