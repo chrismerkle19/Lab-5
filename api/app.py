@@ -105,7 +105,7 @@ def md5(result):
 # slack alert
 
 
-@app.route('/slack-alert/<string:message>')
+#@app.route('/slack-alert/<string:message>')
 def slackalert(message):
     # sad little work-around that the slack webcrawler will hopefully ignore
     url = "aHR0cHM6Ly9ob29rcy5zbGFjay5jb20vc2VydmljZXMvVDI1N1VCREhEL0IwMlBNTjBUTjdKLzFFcVY1b0haOW5PTEJhOWxjbHhUR3RqOA=="
