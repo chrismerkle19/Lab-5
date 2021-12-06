@@ -2,8 +2,6 @@ version: "3.4"
 services:
   web:
     image: chrismerkle19/tcmg412-api
-    environment:
-      - SLACK_URL
     ports:
       - "5000:5000"
     networks:
@@ -11,4 +9,5 @@ services:
   redis:
       image: redis:latest
       command: ["redis-server", "--bind", "redis", "--port", "6379"]
+ networks:
  webnet:
